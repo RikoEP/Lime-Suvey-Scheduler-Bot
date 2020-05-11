@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime as dt
 import time
+import sqlalchemy
 from sqlalchemy import create_engine
 import os
 
@@ -80,7 +81,11 @@ def process_data():
     a = df.columns[:]
     b = ['B' + str(i) for i in np.arange(1, len(a) + 1)]
     columns = dict(zip(a, b))
-    df = df.rename(columns=columns)    
+    df = df.rename(columns=columns)
+
+    #convert nilai kosong jadi NULL dan ubah tipe data jadi string
+    df.fillna(value=sqlalchemy.sql.null(), inplace=True)
+    df = df.astype(str)    
     
     print('Processed Complete')
     
@@ -93,7 +98,7 @@ def store_data(df):
         
     if 'TABLE_NAME' not in engine.table_names():
         df.to_sql('TABLE_NAME', con=engine)
-    elif 'TABLE_NAME' in engine.table_names() and pd.to_datetime(df['Date submitted']).dt.date == dt.date(dt.now()):
+    elif 'TABLE_NAME' in engine.table_names() and dt.date(pd.to_datetime(df.iloc[0, 1])) == dt.date(dt.now()):
         df.to_sql('TABLE_NAME', con=engine, if_exists='replace')
     else:
         df.to_sql('TABLE_NAME', con=engine, if_exists='append')
