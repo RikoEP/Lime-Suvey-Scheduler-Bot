@@ -70,7 +70,7 @@ def process_data():
     df = df[constraint].sort_values('Date submitted')
     
     # remove duplicate untuk yg sebelum jam 10
-    constraint_duplicate = ((pd.to_datetime(df['Date submitted']).dt.hour <= 10) & (~df['Nama Lengkap Karyawan'].duplicated(keep='last')))
+    constraint_duplicate = ((pd.to_datetime(df['Date submitted']).dt.hour < 10) | (~df['Nama Lengkap Karyawan'].duplicated(keep='last')))
     df = df[constraint_duplicate]
     
     # remove kolom NULL
