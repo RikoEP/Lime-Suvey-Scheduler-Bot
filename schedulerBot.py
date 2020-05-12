@@ -98,8 +98,13 @@ def store_data(df):
         
     if 'TABLE_NAME' not in engine.table_names():
         df.to_sql('TABLE_NAME', con=engine)
-    elif 'TABLE_NAME' in engine.table_names() and dt.date(pd.to_datetime(df.iloc[0, 1])) == dt.date(dt.now()):
-        df.to_sql('TABLE_NAME', con=engine, if_exists='replace')
+    elif 'TABLE_NAME' in engine.table_names():
+        file = open("notification.txt","r").read()
+        
+        if file == "Data Stored Successfully at " + str(dt.date(dt.now())):
+            df.to_sql('TABLE_NAME', con=engine, if_exists='replace')
+        else:
+            df.to_sql('TABLE_NAME', con=engine, if_exists='append')
     else:
         df.to_sql('TABLE_NAME', con=engine, if_exists='append')
     
@@ -114,8 +119,8 @@ if __name__ == '__main__':
     df = process_data()
 
     store_data(df)
-
-    df.to_excel('result.xlsx', index=False)
+    
+    df.to_excel('Result' + str(dt.date(dt.now())) + '.xlsx', index=False)
 
     with open("notification.txt", "w") as file:
         file.write("Data Stored Successfully at " + str(dt.now()))
