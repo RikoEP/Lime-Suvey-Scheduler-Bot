@@ -105,10 +105,9 @@ def store_data(df):
             df.to_sql('TABLE_NAME', con=engine, if_exists='replace')
         else:
             df.to_sql('TABLE_NAME', con=engine, if_exists='append')
-    else:
-        df.to_sql('TABLE_NAME', con=engine, if_exists='append')
     
     print('Data Stored Successfully')
+    file.close()
     
     
 if __name__ == '__main__':
@@ -123,5 +122,6 @@ if __name__ == '__main__':
     df.to_excel('Result' + str(dt.date(dt.now())) + '.xlsx', index=False)
 
     with open("notification.txt", "w") as file:
-        file.write("Data Stored Successfully at " + str(dt.now()))
+        file.write("Data Stored Successfully at " + str(dt.date(dt.now())))
+    file.close()
 
