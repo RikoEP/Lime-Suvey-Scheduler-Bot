@@ -70,7 +70,7 @@ def process_data():
     df = df[constraint].sort_values('Date submitted')
     
     # remove duplicate untuk yg sebelum jam 10
-    constraint_duplicate = ((pd.to_datetime(df['Date submitted']).dt.hour <= 10) & (~df['Nama Lengkap Karyawan'].duplicated(keep='last'))) | (pd.to_datetime(df['Date submitted']).dt.hour > 10)
+    constraint_duplicate = ((pd.to_datetime(df['Date submitted']).dt.hour <= 10) & (~df['Nama Lengkap Karyawan'].duplicated(keep='last')))
     df = df[constraint_duplicate]
     
     # remove kolom NULL
@@ -98,16 +98,11 @@ def store_data(df):
         
     if 'TABLE_NAME' not in engine.table_names():
         df.to_sql('TABLE_NAME', con=engine)
-    elif 'TABLE_NAME' in engine.table_names():
-        file = open("notification.txt","r").read()
         
-        if file == "Data Stored Successfully at " + str(dt.date(dt.now())):
-            df.to_sql('TABLE_NAME', con=engine, if_exists='replace')
-        else:
-            df.to_sql('TABLE_NAME', con=engine, if_exists='append')
+    else:
+        df.to_sql('TABLE_NAME', con=engine, if_exists='append')
     
     print('Data Stored Successfully')
-    file.close()
     
     
 if __name__ == '__main__':
@@ -119,9 +114,7 @@ if __name__ == '__main__':
 
     store_data(df)
     
-    df.to_excel('Result' + str(dt.date(dt.now())) + '.xlsx', index=False)
+    df.to_excel('Result' + str(dt.now()) + '.xlsx', index=False)
 
-    with open("notification.txt", "w") as file:
-        file.write("Data Stored Successfully at " + str(dt.date(dt.now())))
-    file.close()
+
 
